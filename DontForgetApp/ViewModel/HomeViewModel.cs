@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
 {
-	public class HomeViewModel : ObservableObject
+	public partial class HomeViewModel : ObservableObject
 	{
 		private IReminderService reminderService { get; set; }
 
