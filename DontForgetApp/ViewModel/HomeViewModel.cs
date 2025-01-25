@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
+using DontForgetApp.View;
 using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
@@ -27,9 +28,9 @@ namespace DontForgetApp.ViewModel
 			AddNewReminder = new Command(AddNewReminderEvent);
 		}
 
-		private void AddNewReminderEvent(object obj)
+		private async void AddNewReminderEvent(object obj)
 		{
-			throw new NotImplementedException();
+			await Shell.Current.GoToAsync(nameof(NewReminderView));
 		}
 
 		private void UpdateReminderEvent(object obj)

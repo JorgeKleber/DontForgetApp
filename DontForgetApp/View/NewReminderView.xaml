@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DontForgetApp.View.NewReminderView"
+             Title="NewReminderView">
+    <Grid>
+
+        <VerticalStackLayout Margin="10">
+            <Entry Placeholder="{Binding PlaceholderTitle}"
+                   Text="{Binding NewReminder.Title, Mode=TwoWay}"/>
+            <Entry Placeholder="{Binding PlaceholderDescription}"
+                   Text="{Binding NewReminder.Description}"/>
+            <DatePicker Date="{Binding NewReminder.RemindDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
+            <Button Text="Attach files"/>
+        </VerticalStackLayout>
+
+        <Button Text="Save"
+                VerticalOptions="End"
+                Margin="10"
+                Command="{Binding SaveReminder}"/>
+
+    </Grid>
+</ContentPage>

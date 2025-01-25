@@ -8,8 +8,6 @@ namespace DontForgetApp
         public App(IReminderService reminderService)
         {
             InitializeComponent();
-
-            MainPage = new NavigationPage(new HomeView(reminderService));
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
