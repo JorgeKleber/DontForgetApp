@@ -1,9 +1,13 @@
-﻿namespace DontForgetApp
+﻿using DontForgetApp.Service;
+using DontForgetApp.View;
+
+namespace DontForgetApp
 {
     public partial class App : Application
     {
-        public App()
+        public App(IReminderService reminderService)
         {
+            reminderService.InitAsync();
             InitializeComponent();
         }
 
