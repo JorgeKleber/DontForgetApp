@@ -1,10 +1,13 @@
 ﻿using DontForgetApp.Model;
+using Java.Lang;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Exception = System.Exception;
 
 namespace DontForgetApp.Service
 {
@@ -16,36 +19,85 @@ namespace DontForgetApp.Service
 		{
 			if (_dbConnection == null)
 			{
-				string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Reminder.db3");
+				try
+				{
+					string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Reminder.db3");
 
-				_dbConnection = new SQLiteAsyncConnection(path);
-				await _dbConnection.CreateTableAsync<Reminder>();
+					_dbConnection = new SQLiteAsyncConnection(path);
+					await _dbConnection.CreateTableAsync<Reminder>();
+				}
+				catch (Exception exception)
+				{
+					Debug.WriteLine("Ocorreu um erro na função InitAsync: " + exception.Message);
+				}
 			}
 		}
 
 		public Task<int> AddReminder(Reminder reminder)
 		{
-			return _dbConnection.InsertAsync(reminder);
+			try
+			{
+				return _dbConnection.InsertAsync(reminder);
+				
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função AddReminder: " + exception.Message);
+				return Task.FromResult(-1);
+
+			}
 		}
 
 		public Task<int> UpdateReminder(Reminder reminder)
 		{
-			return _dbConnection.UpdateAsync(reminder);
+			try
+			{
+				return _dbConnection.UpdateAsync(reminder);
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função UpdateReminder: " + exception.Message);
+				return Task.FromResult(-1);
+			}
 		}
 
 		public Task<int> DeleteReminder(int id)
 		{
-			return _dbConnection.DeleteAsync(id);
+			try
+			{
+				return _dbConnection.DeleteAsync(id);
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função DeleteReminder: " + exception.Message);
+				return Task.FromResult(-1);
+			}
 		}
 
 		public Task<Reminder> GetReminderById(int id)
 		{
-			return _dbConnection.Table<Reminder>().FirstOrDefaultAsync(x => x.IdReminder == id);
+			try
+			{
+				return _dbConnection.Table<Reminder>().FirstOrDefaultAsync(x => x.IdReminder == id);
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função GetReminderById: " + exception.Message);
+				return Task.FromResult(new Reminder());
+			}
 		}
 
 		public Task<List<Reminder>> GetReminders(DateTime date)
 		{
-			return _dbConnection.Table<Reminder>().ToListAsync();
+			try
+			{
+				return _dbConnection.Table<Reminder>().ToListAsync();
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função GetReminders: " + exception.Message);
+				return Task.FromResult(new List<Reminder>());
+			}
 		}
 	}
 }

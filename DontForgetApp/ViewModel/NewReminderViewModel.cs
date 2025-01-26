@@ -30,7 +30,6 @@ namespace DontForgetApp.ViewModel
 		public NewReminderViewModel(IReminderService service)
 		{
 			reminderService = service;
-			NewReminder = new Reminder();
 
 			CancelReminder = new Command(CancelReminderEvent);
 			SaveReminder = new Command(SaveReminderEvent);
@@ -43,20 +42,57 @@ namespace DontForgetApp.ViewModel
 			_placeholderTitle = "Entry a Title here";
 			_placeholderDescription = "Entry the reminder description";
 			_placeholderReminderDateTime = DateTime.Today;
+
+			NewReminder = new Reminder();
 			NewReminder.RemindDateTime = _placeholderReminderDateTime;
+		}
+
+		private bool CanSaveNewReminder()
+		{
+			if (string.IsNullOrEmpty(NewReminder.Title))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		private async void SaveReminderEvent(object obj)
 		{
-			var teste = _newReminder;
+			var canSave = CanSaveNewReminder();
 
-			//await reminderService.InitAsync();
-			//await reminderService.InitAsync();
+			if (canSave)
+			{
+				await reminderService.InitAsync();
+
+				int operationResult = await reminderService.AddReminder(NewReminder);
+
+				if (operationResult == 1) 
+				{
+					FinalizeOperation();
+				}
+				else
+				{
+					await Shell.Current.CurrentPage.DisplayAlert("Erro ao criar Lembrete", "Infelizmente houve um erro ao criar o lembrete", "Entendi");
+				}
+
+			}
+			else
+			{
+				await Shell.Current.CurrentPage.DisplayAlert("Ops!", "O campo de título não pode ficar em branco", "Entendi");
+			}
 		}
 
 		private void CancelReminderEvent(object obj)
 		{
-			
+			FinalizeOperation();
+		}
+
+		private async void FinalizeOperation()
+		{
+			await Shell.Current.GoToAsync("..");
 		}
 	}
 }
