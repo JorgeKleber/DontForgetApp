@@ -7,6 +7,7 @@ namespace DontForgetApp
     {
         public App(IReminderService reminderService)
         {
+            reminderService.InitAsync();
             InitializeComponent();
         }
 

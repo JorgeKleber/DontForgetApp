@@ -1,5 +1,4 @@
 ﻿using DontForgetApp.Model;
-using Java.Lang;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -61,11 +60,11 @@ namespace DontForgetApp.Service
 			}
 		}
 
-		public Task<int> DeleteReminder(int id)
+		public Task<int> DeleteReminder(Reminder reminder)
 		{
 			try
 			{
-				return _dbConnection.DeleteAsync(id);
+				return _dbConnection.DeleteAsync(reminder);
 			}
 			catch (Exception exception)
 			{
@@ -87,7 +86,7 @@ namespace DontForgetApp.Service
 			}
 		}
 
-		public Task<List<Reminder>> GetReminders(DateTime date)
+		public Task<List<Reminder>> GetReminders()
 		{
 			try
 			{

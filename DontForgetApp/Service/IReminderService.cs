@@ -10,10 +10,10 @@ namespace DontForgetApp.Service
 	public interface IReminderService
 	{
 		Task InitAsync();
-		Task<List<Reminder>>GetReminders(DateTime date);
+		Task<List<Reminder>>GetReminders();
 		Task<Reminder> GetReminderById(int id);
 		Task<int>AddReminder(Reminder reminder);
-		Task<int>DeleteReminder(int id);
+		Task<int>DeleteReminder(Reminder reminder);
 		Task<int>UpdateReminder(Reminder reminder);
 	}
 }

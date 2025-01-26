@@ -2,21 +2,26 @@
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using DontForgetApp.View;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
 {
 	public partial class HomeViewModel : ObservableObject
 	{
-		private IReminderService reminderService { get; set; }
 
 		[ObservableProperty]
-		private List<Reminder> _reminders;
+		private ObservableCollection<Reminder> _reminders;
+		[ObservableProperty]
+		private Reminder _reminderSelected;
 
 		public ICommand AddNewReminder { get; set; }
 		public ICommand UpdateReminder { get; set; }
 		public ICommand DeleteReminder { get; set; }
 		public ICommand ShowReminderDetails { get; set; }
+
+		private IReminderService reminderService { get; set; }
 
 		public HomeViewModel(IReminderService reminderService)
 		{
@@ -26,6 +31,12 @@ namespace DontForgetApp.ViewModel
 			DeleteReminder = new Command(DeleteReminderEvent);
 			UpdateReminder = new Command(UpdateReminderEvent);
 			AddNewReminder = new Command(AddNewReminderEvent);
+		}
+
+		public void LoadReminderList()
+		{
+			var reminderCollection = reminderService.GetReminders().Result;
+			Reminders = new ObservableCollection<Reminder>(reminderCollection);
 		}
 
 		private async void AddNewReminderEvent(object obj)
@@ -38,9 +49,21 @@ namespace DontForgetApp.ViewModel
 			throw new NotImplementedException();
 		}
 
-		private void DeleteReminderEvent(object obj)
+		private async void DeleteReminderEvent(object obj)
 		{
-			throw new NotImplementedException();
+			bool canDelete = await Shell.Current.DisplayAlert("Excluir Lembrete?", "Após excluir não será possível recuperar este lembrete, deseja realmente excluir?", "Sim", "Não");
+
+			if (canDelete)
+			{
+				var operationStatus = reminderService.DeleteReminder(ReminderSelected);
+
+				if (operationStatus.Result != 1)
+				{
+					await Shell.Current.DisplayAlert("Ops!", "Parece que o lembrete não pôde ser excluído, tente repetir a operação ou reiniciar o aplicativo", "Entendi");
+				}
+
+				LoadReminderList();
+			}
 		}
 
 		private void ShowReminderDetailsEvent(object obj)

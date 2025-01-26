@@ -5,9 +5,18 @@ namespace DontForgetApp.View;
 
 public partial class HomeView : ContentPage
 {
+	public HomeViewModel ViewModel { get; set; }
+
 	public HomeView(IReminderService reminderService)
 	{
 		InitializeComponent();
-		BindingContext = new HomeViewModel(reminderService);
+		ViewModel = new HomeViewModel(reminderService);
+		BindingContext = ViewModel;
+	}
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		ViewModel.LoadReminderList();
 	}
 }
