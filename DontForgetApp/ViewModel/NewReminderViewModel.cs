@@ -1,11 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Plugin.LocalNotification;
 using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
@@ -22,6 +18,8 @@ namespace DontForgetApp.ViewModel
 		private byte[] _fileAttached;
 		[ObservableProperty]
 		private Reminder _newReminder;
+		[ObservableProperty]
+		private TimeSpan _reminderTime;
 
 		public ICommand SaveReminder { get; set; }
 		public ICommand CancelReminder{ get; set; }
@@ -39,17 +37,41 @@ namespace DontForgetApp.ViewModel
 
 		private void Init()
 		{
-			_placeholderTitle = "Entry a Title here";
-			_placeholderDescription = "Entry the reminder description";
-			_placeholderReminderDateTime = DateTime.Today;
+			PlaceholderTitle = "Entry a Title here";
+			PlaceholderDescription = "Entry the reminder description";
+			PlaceholderReminderDateTime = DateTime.Now;
+			ReminderTime = PlaceholderReminderDateTime.TimeOfDay;
 
 			NewReminder = new Reminder();
-			NewReminder.RemindDateTime = _placeholderReminderDateTime;
+		}
+
+		private async void CreateReminderNotification()
+		{
+			try
+			{
+				var request = new NotificationRequest
+				{
+					NotificationId = 1337,
+					Title = NewReminder.Title,
+					Description = NewReminder.Description,
+					BadgeNumber = 42,
+					Schedule = new NotificationRequestSchedule
+					{
+						NotifyTime = NewReminder.RemindDateTime,
+					}
+				};
+
+				await LocalNotificationCenter.Current.Show(request);
+			}
+			catch (Exception ex)
+			{
+				await Shell.Current.CurrentPage.DisplayAlert("Erro ao criar Lembrete", "Infelizmente houve um erro ao criar o lembrete", "Entendi");
+			}
 		}
 
 		private bool CanSaveNewReminder()
 		{
-			if (string.IsNullOrEmpty(NewReminder.Title))
+			if (string.IsNullOrEmpty(PlaceholderTitle))
 			{
 				return false;
 			}
@@ -65,12 +87,13 @@ namespace DontForgetApp.ViewModel
 
 			if (canSave)
 			{
-				await reminderService.InitAsync();
+				NewReminder.RemindDateTime = PlaceholderReminderDateTime + ReminderTime;
 
 				int operationResult = await reminderService.AddReminder(NewReminder);
 
 				if (operationResult == 1) 
 				{
+					CreateReminderNotification();
 					FinalizeOperation();
 				}
 				else

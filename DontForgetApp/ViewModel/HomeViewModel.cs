@@ -2,6 +2,7 @@
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using DontForgetApp.View;
+using Plugin.LocalNotification;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -31,6 +32,16 @@ namespace DontForgetApp.ViewModel
 			DeleteReminder = new Command(DeleteReminderEvent);
 			UpdateReminder = new Command(UpdateReminderEvent);
 			AddNewReminder = new Command(AddNewReminderEvent);
+
+			CheckPermissions();
+		}
+
+		private async void CheckPermissions()
+		{
+			if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+			{
+				await LocalNotificationCenter.Current.RequestNotificationPermission();
+			}
 		}
 
 		public void LoadReminderList()
