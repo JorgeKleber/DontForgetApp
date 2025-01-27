@@ -7,10 +7,10 @@ public partial class HomeView : ContentPage
 {
 	public HomeViewModel ViewModel { get; set; }
 
-	public HomeView(IReminderService reminderService)
+	public HomeView(IDatabaseService reminderService, INotifyService notifyService)
 	{
 		InitializeComponent();
-		ViewModel = new HomeViewModel(reminderService);
+		ViewModel = new HomeViewModel(reminderService, notifyService);
 		BindingContext = ViewModel;
 	}
 

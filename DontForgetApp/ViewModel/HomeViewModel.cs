@@ -2,6 +2,7 @@
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using DontForgetApp.View;
+using Plugin.LocalNotification;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -21,21 +22,34 @@ namespace DontForgetApp.ViewModel
 		public ICommand DeleteReminder { get; set; }
 		public ICommand ShowReminderDetails { get; set; }
 
-		private IReminderService reminderService { get; set; }
+		private IDatabaseService DbService { get; set; }
+		private INotifyService NotificationService { get; set; }
 
-		public HomeViewModel(IReminderService reminderService)
+		public HomeViewModel(IDatabaseService reminderService, INotifyService notificationService)
 		{
-			this.reminderService = reminderService;
+			this.DbService = reminderService;
+			NotificationService = notificationService;
 
 			ShowReminderDetails = new Command(ShowReminderDetailsEvent);
 			DeleteReminder = new Command(DeleteReminderEvent);
 			UpdateReminder = new Command(UpdateReminderEvent);
 			AddNewReminder = new Command(AddNewReminderEvent);
+
+			CheckPermissions();
+			NotificationService = notificationService;
+		}
+
+		private async void CheckPermissions()
+		{
+			if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+			{
+				await LocalNotificationCenter.Current.RequestNotificationPermission();
+			}
 		}
 
 		public void LoadReminderList()
 		{
-			var reminderCollection = reminderService.GetReminders().Result;
+			var reminderCollection = DbService.GetReminders().Result;
 			Reminders = new ObservableCollection<Reminder>(reminderCollection);
 		}
 
@@ -55,12 +69,14 @@ namespace DontForgetApp.ViewModel
 
 			if (canDelete)
 			{
-				var operationStatus = reminderService.DeleteReminder(ReminderSelected);
+				var operationStatus = DbService.DeleteReminder(ReminderSelected);
 
 				if (operationStatus.Result != 1)
 				{
 					await Shell.Current.DisplayAlert("Ops!", "Parece que o lembrete não pôde ser excluído, tente repetir a operação ou reiniciar o aplicativo", "Entendi");
 				}
+
+				await NotificationService.DeleteReminderNotification(ReminderSelected.IdReminder);
 
 				LoadReminderList();
 			}

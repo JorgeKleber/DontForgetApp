@@ -5,9 +5,9 @@ namespace DontForgetApp.View;
 
 public partial class NewReminderView : ContentPage
 {
-	public NewReminderView(IReminderService reminderService)
+	public NewReminderView(IDatabaseService reminderService, INotifyService notifyService)
 	{
 		InitializeComponent();
-		BindingContext = new NewReminderViewModel(reminderService);
+		BindingContext = new NewReminderViewModel(reminderService, notifyService);
 	}
 }

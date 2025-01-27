@@ -5,7 +5,7 @@ namespace DontForgetApp
 {
     public partial class App : Application
     {
-        public App(IReminderService reminderService)
+        public App(IDatabaseService reminderService)
         {
             reminderService.InitAsync();
             InitializeComponent();
