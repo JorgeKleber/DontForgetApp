@@ -10,7 +10,7 @@ using Exception = System.Exception;
 
 namespace DontForgetApp.Service
 {
-	public class ReminderService : IReminderService
+	public class DatabaseService : IDatabaseService
 	{
 		private SQLiteAsyncConnection _dbConnection;
 
@@ -36,7 +36,9 @@ namespace DontForgetApp.Service
 		{
 			try
 			{
-				return _dbConnection.InsertAsync(reminder);
+				var result = _dbConnection.InsertAsync(reminder);
+
+				return result;
 				
 			}
 			catch (Exception exception)

@@ -29,7 +29,8 @@ namespace DontForgetApp
             builder.Services.AddTransient<NewReminderView>();
             builder.Services.AddTransient<NewReminderViewModel>();
 
-            builder.Services.AddSingleton<IReminderService, ReminderService>();
+            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
+            builder.Services.AddSingleton<INotifyService, NotifyService>();
             return builder.Build();
         }
     }

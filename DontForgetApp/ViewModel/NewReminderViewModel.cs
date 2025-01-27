@@ -23,11 +23,13 @@ namespace DontForgetApp.ViewModel
 
 		public ICommand SaveReminder { get; set; }
 		public ICommand CancelReminder{ get; set; }
-		public IReminderService reminderService { get; set; }
+		public IDatabaseService BdService { get; set; }
+		public INotifyService NotificationService { get; set; }
 
-		public NewReminderViewModel(IReminderService service)
+		public NewReminderViewModel(IDatabaseService dbService, INotifyService notifyService)
 		{
-			reminderService = service;
+			BdService = dbService;
+			NotificationService = notifyService;
 
 			CancelReminder = new Command(CancelReminderEvent);
 			SaveReminder = new Command(SaveReminderEvent);
@@ -43,30 +45,6 @@ namespace DontForgetApp.ViewModel
 			ReminderTime = PlaceholderReminderDateTime.TimeOfDay;
 
 			NewReminder = new Reminder();
-		}
-
-		private async void CreateReminderNotification()
-		{
-			try
-			{
-				var request = new NotificationRequest
-				{
-					NotificationId = 1337,
-					Title = NewReminder.Title,
-					Description = NewReminder.Description,
-					BadgeNumber = 42,
-					Schedule = new NotificationRequestSchedule
-					{
-						NotifyTime = NewReminder.RemindDateTime,
-					}
-				};
-
-				await LocalNotificationCenter.Current.Show(request);
-			}
-			catch (Exception ex)
-			{
-				await Shell.Current.CurrentPage.DisplayAlert("Erro ao criar Lembrete", "Infelizmente houve um erro ao criar o lembrete", "Entendi");
-			}
 		}
 
 		private bool CanSaveNewReminder()
@@ -89,11 +67,11 @@ namespace DontForgetApp.ViewModel
 			{
 				NewReminder.RemindDateTime = PlaceholderReminderDateTime + ReminderTime;
 
-				int operationResult = await reminderService.AddReminder(NewReminder);
+				int operationResult = await BdService.AddReminder(NewReminder);
 
 				if (operationResult == 1) 
 				{
-					CreateReminderNotification();
+					await NotificationService.CreateReminderNotification(NewReminder);
 					FinalizeOperation();
 				}
 				else

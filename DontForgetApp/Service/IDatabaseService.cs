@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DontForgetApp.Service
 {
-	public interface IReminderService
+	public interface IDatabaseService
 	{
 		Task InitAsync();
 		Task<List<Reminder>>GetReminders();
