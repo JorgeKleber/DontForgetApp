@@ -12,7 +12,7 @@
                    Text="{Binding NewReminder.Description}"/>
             <DatePicker Date="{Binding PlaceholderReminderDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
             <TimePicker Time="{Binding ReminderTime, Mode=TwoWay}" />
-            <Button Text="Attach files"/>
+            <Button Text="Attach files" Command="{Binding AttachFile}"/>
         </VerticalStackLayout>
 
         <Button Text="Save"
