@@ -70,7 +70,9 @@ namespace DontForgetApp.ViewModel
 
 			if (canSave)
 			{
-				NewReminder.RemindDateTime = PlaceholderReminderDateTime + ReminderTime;
+				PlaceholderReminderDateTime = DateTime.Today.Add(ReminderTime);
+
+				NewReminder.RemindDateTime = PlaceholderReminderDateTime;
 
 				int operationResult;
 

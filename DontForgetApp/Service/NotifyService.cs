@@ -20,6 +20,7 @@ namespace DontForgetApp.Service
 					Title = reminder.Title,
 					Description = reminder.Description,
 					BadgeNumber = 42,
+					CategoryType = NotificationCategoryType.Reminder,
 					Schedule = new NotificationRequestSchedule
 					{
 						NotifyTime = reminder.RemindDateTime,

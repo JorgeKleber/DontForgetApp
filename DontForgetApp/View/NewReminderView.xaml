@@ -13,6 +13,20 @@
             <DatePicker Date="{Binding PlaceholderReminderDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
             <TimePicker Time="{Binding ReminderTime, Mode=TwoWay}" />
             <Button Text="Attach files" Command="{Binding AttachFile}"/>
+            <CollectionView ItemsSource="{Binding SelectedFiles}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="attach_icon"/>
+                            <Label Grid.Column="1" Text="{Binding FileName}" VerticalOptions="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </VerticalStackLayout>
 
         <Button Text="Save"
