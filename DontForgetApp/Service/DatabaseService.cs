@@ -24,6 +24,7 @@ namespace DontForgetApp.Service
 
 					_dbConnection = new SQLiteAsyncConnection(path);
 					await _dbConnection.CreateTableAsync<Reminder>();
+					await _dbConnection.CreateTableAsync<AttachFile>();
 				}
 				catch (Exception exception)
 				{
@@ -100,6 +101,16 @@ namespace DontForgetApp.Service
 		{
 			try
 			{
+				var files = _dbConnection.Table<AttachFile>().Where(x => x.IdReminder == reminder.IdReminder).ToListAsync();
+
+				if (files.Result != null || files.Result?.Count != 0)
+				{
+					foreach (AttachFile item in files.Result)
+					{
+						_dbConnection.DeleteAsync(item);
+					} 
+				}
+
 				return _dbConnection.DeleteAsync(reminder);
 			}
 			catch (Exception exception)
