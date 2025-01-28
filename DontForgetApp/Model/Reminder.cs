@@ -13,6 +13,5 @@ namespace DontForgetApp.Model
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public DateTime RemindDateTime { get; set; }
-		public Byte[] FileAttached { get; set; }
 	}
 }

@@ -32,11 +32,29 @@ namespace DontForgetApp.Service
 			}
 		}
 
-		public Task<int> AddReminder(Reminder reminder)
+		public async Task<List<FileResult>> PickerSomeFiles()
+		{
+			try
+			{
+				var result = await FilePicker.Default.PickMultipleAsync();
+
+				return result.ToList();
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função PickerSomeFiles: " + exception.Message);
+				return null;
+			}
+		}
+
+		public Task<int> AddReminder(Reminder reminder, AttachFile[] files = null)
 		{
 			try
 			{
 				var result = _dbConnection.InsertAsync(reminder);
+
+				if (files != null)
+					AddAttach(files);
 
 				return result;
 				
@@ -44,6 +62,22 @@ namespace DontForgetApp.Service
 			catch (Exception exception)
 			{
 				Debug.WriteLine("Ocorreu um erro na função AddReminder: " + exception.Message);
+				return Task.FromResult(-1);
+			}
+		}
+
+		private Task AddAttach(AttachFile[] files)
+		{
+			try
+			{
+				var result = _dbConnection.InsertAllAsync(files);
+
+					return result;
+
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função AddAttach: " + exception.Message);
 				return Task.FromResult(-1);
 
 			}

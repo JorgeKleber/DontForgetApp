@@ -2,6 +2,7 @@
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using Plugin.LocalNotification;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
@@ -19,10 +20,14 @@ namespace DontForgetApp.ViewModel
 		[ObservableProperty]
 		private Reminder _newReminder;
 		[ObservableProperty]
+		private AttachFile[] _selectedFiles;
+		[ObservableProperty]
 		private TimeSpan _reminderTime;
 
+		private List<FileResult> _files;
+
 		public ICommand SaveReminder { get; set; }
-		public ICommand CancelReminder{ get; set; }
+		public ICommand AttachFile{ get; set; }
 		public IDatabaseService BdService { get; set; }
 		public INotifyService NotificationService { get; set; }
 
@@ -31,7 +36,7 @@ namespace DontForgetApp.ViewModel
 			BdService = dbService;
 			NotificationService = notifyService;
 
-			CancelReminder = new Command(CancelReminderEvent);
+			AttachFile = new Command(AttachFileEvent);
 			SaveReminder = new Command(SaveReminderEvent);
 
 			Init();
@@ -67,7 +72,16 @@ namespace DontForgetApp.ViewModel
 			{
 				NewReminder.RemindDateTime = PlaceholderReminderDateTime + ReminderTime;
 
-				int operationResult = await BdService.AddReminder(NewReminder);
+				int operationResult;
+
+				if (SelectedFiles == null || SelectedFiles.Count() == 0)
+				{
+					operationResult = await BdService.AddReminder(NewReminder);
+				}
+				else
+				{
+					operationResult = await BdService.AddReminder(NewReminder, SelectedFiles);
+				}
 
 				if (operationResult == 1) 
 				{
@@ -86,9 +100,58 @@ namespace DontForgetApp.ViewModel
 			}
 		}
 
-		private void CancelReminderEvent(object obj)
+		private async void AttachFileEvent(object obj)
 		{
-			FinalizeOperation();
+			var searchResult = await BdService.PickerSomeFiles();
+
+			if (searchResult == null) 
+				return;
+
+			_files = searchResult;
+
+			var listFiles = await ConvertFileResultToAttachFile(_files);
+
+			SelectedFiles = listFiles.ToArray();
+		}
+
+		public async Task<byte[]> ConvertFileToBytes(string filePath)
+		{
+			try
+			{
+				return await File.ReadAllBytesAsync(filePath);
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função ConvertFileToBytes: " + exception.Message);
+				return null;
+			}
+		}
+
+		private async Task<List<AttachFile>> ConvertFileResultToAttachFile(List<FileResult> files)
+		{
+			try
+			{
+				List<AttachFile> myAttachFiles = new List<AttachFile>();
+
+				foreach (var file in files)
+				{
+					var newAttachFile = new AttachFile()
+					{
+						FileName = file.FileName,
+						IdReminder = NewReminder.IdReminder,
+						FileBytes = await ConvertFileToBytes(file.FullPath)
+					};
+
+					myAttachFiles.Add(newAttachFile);
+				}
+
+				return myAttachFiles;
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função ConvertFileResultToAttachFile: " + exception.Message);
+				return null;
+			}
 		}
 
 		private async void FinalizeOperation()
