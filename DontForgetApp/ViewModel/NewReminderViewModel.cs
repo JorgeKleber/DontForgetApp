@@ -10,11 +10,15 @@ namespace DontForgetApp.ViewModel
 	public partial class NewReminderViewModel : ObservableObject
 	{
 		[ObservableProperty]
+		private string _title;
+		[ObservableProperty]
+		private string _description;
+		[ObservableProperty]
 		private string _placeholderTitle;
 		[ObservableProperty]
 		private string _placeholderDescription;
 		[ObservableProperty]
-		private DateTime _placeholderReminderDateTime;
+		private DateTime _reminderDateTime;
 		[ObservableProperty]
 		private byte[] _fileAttached;
 		[ObservableProperty]
@@ -38,18 +42,19 @@ namespace DontForgetApp.ViewModel
 
 			AttachFile = new Command(AttachFileEvent);
 			SaveReminder = new Command(SaveReminderEvent);
-
-			Init();
 		}
 
-		private void Init()
+		public void Init(DateTime selectedDate)
 		{
 			PlaceholderTitle = "Entry a Title here";
 			PlaceholderDescription = "Entry the reminder description";
-			PlaceholderReminderDateTime = DateTime.Now;
-			ReminderTime = PlaceholderReminderDateTime.TimeOfDay;
+			ReminderDateTime = selectedDate;
+			ReminderTime = DateTime.Now.Date.TimeOfDay;
 
 			NewReminder = new Reminder();
+			NewReminder.Title = Title;
+			NewReminder.Description = Description;
+			NewReminder.RemindDateTime = ReminderDateTime;
 		}
 
 		private bool CanSaveNewReminder()
@@ -70,9 +75,12 @@ namespace DontForgetApp.ViewModel
 
 			if (canSave)
 			{
-				PlaceholderReminderDateTime = DateTime.Today.Add(ReminderTime);
+				if (NewReminder.RemindDateTime.TimeOfDay != ReminderTime)
+				{
+					NewReminder.RemindDateTime.Add(ReminderTime);
+				}
 
-				NewReminder.RemindDateTime = PlaceholderReminderDateTime;
+				NewReminder.Description = string.IsNullOrEmpty(PlaceholderDescription) ? string.Empty : PlaceholderDescription;
 
 				int operationResult;
 
