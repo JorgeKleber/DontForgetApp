@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
 {
+	[QueryProperty(nameof(ReminderDateTime), "SelectedDate")]
 	public partial class NewReminderViewModel : ObservableObject
 	{
 		[ObservableProperty]
@@ -42,14 +43,15 @@ namespace DontForgetApp.ViewModel
 
 			AttachFile = new Command(AttachFileEvent);
 			SaveReminder = new Command(SaveReminderEvent);
+
+			Init();
 		}
 
-		public void Init(DateTime selectedDate)
+		private void Init()
 		{
 			PlaceholderTitle = "Entry a Title here";
 			PlaceholderDescription = "Entry the reminder description";
-			ReminderDateTime = selectedDate;
-			ReminderTime = DateTime.Now.Date.TimeOfDay;
+			ReminderTime = DateTime.Now.TimeOfDay;
 
 			NewReminder = new Reminder();
 			NewReminder.Title = Title;
@@ -75,12 +77,10 @@ namespace DontForgetApp.ViewModel
 
 			if (canSave)
 			{
-				if (NewReminder.RemindDateTime.TimeOfDay != ReminderTime)
-				{
-					NewReminder.RemindDateTime.Add(ReminderTime);
-				}
+				NewReminder.Title = Title;
+				NewReminder.Description = string.IsNullOrEmpty(Description) ? string.Empty : Description;
 
-				NewReminder.Description = string.IsNullOrEmpty(PlaceholderDescription) ? string.Empty : PlaceholderDescription;
+				NewReminder.RemindDateTime = ReminderDateTime.Add(ReminderTime);
 
 				int operationResult;
 

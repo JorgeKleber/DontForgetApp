@@ -1,13 +1,14 @@
-﻿using Android.App.Usage;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DontForgetApp.Enuns;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using DontForgetApp.View;
+using Microsoft.Maui.Platform;
 using Plugin.LocalNotification;
 using Plugin.Maui.Calendar.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
@@ -20,13 +21,14 @@ namespace DontForgetApp.ViewModel
 		[ObservableProperty]
 		private Reminder _reminderSelected;
 		[ObservableProperty]
-		public EventCollection _eventsDates;
+		private EventCollection _eventsDates;
 		[ObservableProperty]
-		public DateTime _selectedDate;
+		private DateTime _selectedDate;
+		[ObservableProperty]
+		private CultureInfo _cultureApp = CultureInfo.InvariantCulture;
 
 		public FilterType TypeFiter { get; set; }
-
-
+		
 		public ICommand AddNewReminder { get; set; }
 		public ICommand UpdateReminder { get; set; }
 		public ICommand DeleteReminder { get; set; }
@@ -54,6 +56,8 @@ namespace DontForgetApp.ViewModel
 
 			Reminders = new ObservableCollection<Reminder>();
 			EventsDates = new EventCollection();
+
+			CultureApp = CultureInfo.GetCultureInfo("pt-BR");
 		}
 
 		private void SearchTextChangeEvent(string searchText)
@@ -181,7 +185,7 @@ namespace DontForgetApp.ViewModel
 				{ "SelectedDate", SelectedDate}
 			};
 
-			await Shell.Current.GoToAsync(nameof(NewReminderView),true, selectedDate);
+			await Shell.Current.GoToAsync($"{nameof(NewReminderView)}",true, selectedDate);
 		}
 
 		private void UpdateReminderEvent(object obj)

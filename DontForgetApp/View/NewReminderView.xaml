@@ -10,7 +10,7 @@
                    Text="{Binding Title, Mode=TwoWay}"/>
             <Entry Placeholder="{Binding PlaceholderDescription}"
                    Text="{Binding Description}"/>
-            <DatePicker Date="{Binding RemindDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
+            <DatePicker Date="{Binding ReminderDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
             <TimePicker Time="{Binding ReminderTime, Mode=TwoWay}" />
             <Button Text="Attach files" Command="{Binding AttachFile}"/>
             <CollectionView ItemsSource="{Binding SelectedFiles}">

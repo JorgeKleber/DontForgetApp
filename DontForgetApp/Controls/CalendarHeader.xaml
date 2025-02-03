@@ -44,9 +44,9 @@
             VerticalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span Text="January" />
+                    <Span Text="{Binding LayoutUnitText, Mode=TwoWay}" />
                     <Span Text=", " />
-                    <Span Text="2025" />
+                    <Span Text="{Binding Year, Mode=TwoWay}" />
                 </FormattedString>
             </Label.FormattedText>
         </Label>

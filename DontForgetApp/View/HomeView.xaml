@@ -20,6 +20,7 @@
                          FooterArrowVisible="False"
                          FooterSectionVisible="true"
                          SelectedDate="{Binding SelectedDate}"
+                         Culture="{Binding CultureApp}"
                          TodayOutlineColor="BlueViolet"
                          Events="{Binding EventsDates}" 
                          EventsScrollViewVisible="True">
