@@ -84,11 +84,33 @@ namespace DontForgetApp.Service
 			}
 		}
 
-		public Task<int> UpdateReminder(Reminder reminder)
+		private Task UpdateAttach(AttachFile[] files)
 		{
 			try
 			{
-				return _dbConnection.UpdateAsync(reminder);
+				var result = _dbConnection.UpdateAsync(files);
+
+				return result;
+
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função AddAttach: " + exception.Message);
+				return Task.FromResult(-1);
+
+			}
+		}
+
+		public Task<int> UpdateReminder(Reminder reminder, AttachFile[] files = null)
+		{
+			try
+			{
+				var Result = _dbConnection.UpdateAsync(reminder);
+
+				if (files != null)
+					UpdateAttach(files);
+
+				return Result;
 			}
 			catch (Exception exception)
 			{

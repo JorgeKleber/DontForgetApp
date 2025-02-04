@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DontForgetApp.Enuns;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
@@ -31,7 +33,6 @@ namespace DontForgetApp.ViewModel
 		
 		public ICommand AddNewReminder { get; set; }
 		public ICommand UpdateReminder { get; set; }
-		public ICommand DeleteReminder { get; set; }
 		public ICommand ShowReminderDetails { get; set; }
 		public ICommand FilterSearch { get; set; }
 		public ICommand SearchTextChange { get; set; }
@@ -39,16 +40,18 @@ namespace DontForgetApp.ViewModel
 		private IDatabaseService DbService { get; set; }
 		private INotifyService NotificationService { get; set; }
 
+		private readonly IPopupService popupService;
 
-		public HomeViewModel(IDatabaseService reminderService, INotifyService notificationService)
+
+		public HomeViewModel(IDatabaseService reminderService, INotifyService notificationService, IPopupService popupService)
 		{
 			this.DbService = reminderService;
+			this.popupService = popupService;
 			NotificationService = notificationService;
 			SelectedDate = DateTime.Now.Date;
 
-			ShowReminderDetails = new Command(ShowReminderDetailsEvent);
+			ShowReminderDetails = new Command<Reminder>(ShowReminderDetailsEvent);
 			SearchTextChange = new Command<string>(SearchTextChangeEvent);
-			DeleteReminder = new Command(DeleteReminderEvent);
 			UpdateReminder = new Command(UpdateReminderEvent);
 			AddNewReminder = new Command(AddNewReminderEvent);
 			FilterSearch = new Command(FilterSearchEvent);
@@ -58,6 +61,8 @@ namespace DontForgetApp.ViewModel
 			EventsDates = new EventCollection();
 
 			CultureApp = CultureInfo.GetCultureInfo("pt-BR");
+
+			
 		}
 
 		private void SearchTextChangeEvent(string searchText)
@@ -166,6 +171,8 @@ namespace DontForgetApp.ViewModel
 							RemindersList = group.ToList()
 						});
 
+			EventsDates.Clear();
+
 			foreach (var date in dates)
 			{
 				if (!EventsDates.ContainsKey(date.DateEvent))
@@ -193,28 +200,19 @@ namespace DontForgetApp.ViewModel
 			throw new NotImplementedException();
 		}
 
-		private async void DeleteReminderEvent(object obj)
+		private async void ShowReminderDetailsEvent(Reminder obj)
 		{
-			bool canDelete = await Shell.Current.DisplayAlert("Excluir Lembrete?", "Após excluir não será possível recuperar este lembrete, deseja realmente excluir?", "Sim", "Não");
-
-			if (canDelete)
+			await this.popupService.ShowPopupAsync<DetailPopupViewModel>(reminder => 
 			{
-				var operationStatus = DbService.DeleteReminder(ReminderSelected);
+				reminder.ReminderSelected = obj;
+				reminder.DbService = DbService;
+				reminder.NotificationService = NotificationService;
+				reminder.DeleteDelegate = LoadReminderList;
 
-				if (operationStatus.Result != 1)
-				{
-					await Shell.Current.DisplayAlert("Ops!", "Parece que o lembrete não pôde ser excluído, tente repetir a operação ou reiniciar o aplicativo", "Entendi");
-				}
+			});
 
-				await NotificationService.DeleteReminderNotification(ReminderSelected.IdReminder);
+			LoadReminderList();
 
-				LoadReminderList();
-			}
-		}
-
-		private async void ShowReminderDetailsEvent(object obj)
-		{
-			await Shell.Current.GoToAsync(nameof(NewReminderView));
 		}
 	}
 }

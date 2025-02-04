@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Core;
 using DontForgetApp.Service;
 using DontForgetApp.ViewModel;
 
@@ -7,10 +8,10 @@ public partial class HomeView : ContentPage
 {
 	public HomeViewModel ViewModel { get; set; }
 
-	public HomeView(IDatabaseService reminderService, INotifyService notifyService)
+	public HomeView(IDatabaseService reminderService, INotifyService notifyService, IPopupService popupService)
 	{
 		InitializeComponent();
-		ViewModel = new HomeViewModel(reminderService, notifyService);
+		ViewModel = new HomeViewModel(reminderService, notifyService, popupService);
 		BindingContext = ViewModel;
 	}
 

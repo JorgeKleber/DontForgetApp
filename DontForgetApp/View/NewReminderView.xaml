@@ -2,7 +2,17 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DontForgetApp.View.NewReminderView"
-             Title="NewReminderView">
+             Title="{Binding TitlePage}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            Text="Excluir" 
+            IconImageSource="trash"
+            Command="{Binding DeleteReminder}"
+            Priority="0"
+            Order="Primary" />
+    </ContentPage.ToolbarItems>
+
     <Grid>
 
         <VerticalStackLayout Margin="10">
@@ -32,7 +42,7 @@
         <Button Text="Save"
                 VerticalOptions="End"
                 Margin="10"
-                Command="{Binding SaveReminder}"/>
+                Command="{Binding RegisterOperation}"/>
 
     </Grid>
 </ContentPage>

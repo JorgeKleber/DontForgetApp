@@ -66,7 +66,7 @@
                         </StackLayout>
 
                         <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.AddNewReminder, Source={x:Reference homeView}}"/>
+                            <TapGestureRecognizer Command="{Binding BindingContext.ShowReminderDetails, Source={x:Reference homeView}}" CommandParameter="{Binding .}"/>
                         </Grid.GestureRecognizers>
 
                     </Grid>
@@ -80,7 +80,6 @@
                 VerticalOptions="Center"
                 Margin="15"
                 Grid.Row="1"/>
-        
 
     </Grid>
 </ContentPage>
