@@ -20,16 +20,11 @@
             HorizontalOptions="Center"
             VerticalOptions="Center"
             WidthRequest="36">
-            <Label
-                FontAttributes="Bold"
-                FontSize="25"
+            <Image
+                Source="arrow_left"
                 HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
                 InputTransparent="True"
-                Text="&#xf060;"
-                TextColor="DarkGreen"
-                VerticalOptions="Center"
-                VerticalTextAlignment="Center" />
+                VerticalOptions="Center"/>
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PrevLayoutUnitCommand}" />
             </Border.GestureRecognizers>
@@ -61,16 +56,10 @@
             HorizontalOptions="Center"
             VerticalOptions="Center"
             WidthRequest="36">
-            <Label
-                FontAttributes="Bold"
-                FontSize="25"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                InputTransparent="True"
-                Text="&#xf061;"
-                TextColor="DarkGreen"
-                VerticalOptions="Center"
-                VerticalTextAlignment="Center" />
+            <Image Source="arrow_right"
+                   HorizontalOptions="Center"
+                   InputTransparent="True"
+                   VerticalOptions="Center"/>
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding NextLayoutUnitCommand}" />
             </Border.GestureRecognizers>
