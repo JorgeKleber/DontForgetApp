@@ -2,15 +2,25 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DontForgetApp.View.NewReminderView"
-             Title="NewReminderView">
+             Title="{Binding TitlePage}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+            Text="Excluir" 
+            IconImageSource="trash"
+            Command="{Binding DeleteReminder}"
+            Priority="0"
+            Order="Primary" />
+    </ContentPage.ToolbarItems>
+
     <Grid>
 
         <VerticalStackLayout Margin="10">
             <Entry Placeholder="{Binding PlaceholderTitle}"
-                   Text="{Binding NewReminder.Title, Mode=TwoWay}"/>
+                   Text="{Binding Title, Mode=TwoWay}"/>
             <Entry Placeholder="{Binding PlaceholderDescription}"
-                   Text="{Binding NewReminder.Description}"/>
-            <DatePicker Date="{Binding PlaceholderReminderDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
+                   Text="{Binding Description}"/>
+            <DatePicker Date="{Binding ReminderDateTime, Mode=TwoWay}" Format="dd/MM/yyyy" />
             <TimePicker Time="{Binding ReminderTime, Mode=TwoWay}" />
             <Button Text="Attach files" Command="{Binding AttachFile}"/>
             <CollectionView ItemsSource="{Binding SelectedFiles}">
@@ -32,7 +42,7 @@
         <Button Text="Save"
                 VerticalOptions="End"
                 Margin="10"
-                Command="{Binding SaveReminder}"/>
+                Command="{Binding RegisterOperation}"/>
 
     </Grid>
 </ContentPage>

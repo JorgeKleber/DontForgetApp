@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Android.Speech.Tts;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using Plugin.LocalNotification;
@@ -7,14 +8,20 @@ using System.Windows.Input;
 
 namespace DontForgetApp.ViewModel
 {
+	[QueryProperty(nameof(ReminderDateTime), "SelectedDate")]
+	[QueryProperty(nameof(NewReminder), "NewReminder")]
 	public partial class NewReminderViewModel : ObservableObject
 	{
+		[ObservableProperty]
+		private string _title;
+		[ObservableProperty]
+		private string _description;
 		[ObservableProperty]
 		private string _placeholderTitle;
 		[ObservableProperty]
 		private string _placeholderDescription;
 		[ObservableProperty]
-		private DateTime _placeholderReminderDateTime;
+		private DateTime _reminderDateTime;
 		[ObservableProperty]
 		private byte[] _fileAttached;
 		[ObservableProperty]
@@ -23,11 +30,16 @@ namespace DontForgetApp.ViewModel
 		private AttachFile[] _selectedFiles;
 		[ObservableProperty]
 		private TimeSpan _reminderTime;
+		[ObservableProperty]
+		private string _titlePage;
 
 		private List<FileResult> _files;
+		private bool isReminderUpdate;
 
-		public ICommand SaveReminder { get; set; }
+		public ICommand RegisterOperation { get; set; }
+		public ICommand DeleteReminder { get; set; }
 		public ICommand AttachFile{ get; set; }
+
 		public IDatabaseService BdService { get; set; }
 		public INotifyService NotificationService { get; set; }
 
@@ -37,24 +49,39 @@ namespace DontForgetApp.ViewModel
 			NotificationService = notifyService;
 
 			AttachFile = new Command(AttachFileEvent);
-			SaveReminder = new Command(SaveReminderEvent);
-
-			Init();
+			RegisterOperation = new Command(RegisterOperationEvent);
+			DeleteReminder = new Command(DeleteReminderEvent);
 		}
 
-		private void Init()
+		public void Init()
 		{
-			PlaceholderTitle = "Entry a Title here";
-			PlaceholderDescription = "Entry the reminder description";
-			PlaceholderReminderDateTime = DateTime.Now;
-			ReminderTime = PlaceholderReminderDateTime.TimeOfDay;
+			if (NewReminder == null)
+			{
+				PlaceholderTitle = "Entry a Title here";
+				PlaceholderDescription = "Entry the reminder description";
 
-			NewReminder = new Reminder();
+				TitlePage = "Novo Lembrete";
+				NewReminder = new Reminder();
+				NewReminder.Title = Title;
+				NewReminder.Description = Description;
+				NewReminder.RemindDateTime = ReminderDateTime;
+				ReminderTime = DateTime.Now.TimeOfDay;
+				isReminderUpdate = false;
+			}
+			else 
+			{
+				TitlePage = "Editar lembrete";
+				Title = NewReminder.Title;
+				Description = NewReminder.Description;
+				ReminderDateTime = NewReminder.RemindDateTime;
+				ReminderTime = NewReminder.RemindDateTime.TimeOfDay;
+				isReminderUpdate = true;
+			}
 		}
 
 		private bool CanSaveNewReminder()
 		{
-			if (string.IsNullOrEmpty(PlaceholderTitle))
+			if (string.IsNullOrEmpty(Title))
 			{
 				return false;
 			}
@@ -64,28 +91,43 @@ namespace DontForgetApp.ViewModel
 			}
 		}
 
-		private async void SaveReminderEvent(object obj)
+		private async void RegisterOperationEvent(object obj)
 		{
 			var canSave = CanSaveNewReminder();
 
 			if (canSave)
 			{
-				PlaceholderReminderDateTime = DateTime.Today.Add(ReminderTime);
+				NewReminder.Title = Title;
+				NewReminder.Description = string.IsNullOrEmpty(Description) ? string.Empty : Description;
 
-				NewReminder.RemindDateTime = PlaceholderReminderDateTime;
+				NewReminder.RemindDateTime = ReminderDateTime.Add(ReminderTime);
 
 				int operationResult;
 
 				if (SelectedFiles == null || SelectedFiles.Count() == 0)
 				{
-					operationResult = await BdService.AddReminder(NewReminder);
+					if (!isReminderUpdate)
+					{
+						operationResult = await BdService.AddReminder(NewReminder);
+					}
+					else
+					{
+						operationResult = await BdService.UpdateReminder(NewReminder);
+					}
 				}
 				else
 				{
-					operationResult = await BdService.AddReminder(NewReminder, SelectedFiles);
+					if (!isReminderUpdate)
+					{
+						operationResult = await BdService.AddReminder(NewReminder, SelectedFiles);
+					}
+					else
+					{
+						operationResult = await BdService.UpdateReminder(NewReminder, SelectedFiles);
+					}
 				}
 
-				if (operationResult == 1) 
+				if (operationResult == 1)
 				{
 					await NotificationService.CreateReminderNotification(NewReminder);
 					FinalizeOperation();
@@ -94,7 +136,6 @@ namespace DontForgetApp.ViewModel
 				{
 					await Shell.Current.CurrentPage.DisplayAlert("Erro ao criar Lembrete", "Infelizmente houve um erro ao criar o lembrete", "Entendi");
 				}
-
 			}
 			else
 			{
@@ -153,6 +194,32 @@ namespace DontForgetApp.ViewModel
 			{
 				Debug.WriteLine("Ocorreu um erro na função ConvertFileResultToAttachFile: " + exception.Message);
 				return null;
+			}
+		}
+
+		private async void DeleteReminderEvent(object obj)
+		{
+			if (!isReminderUpdate)
+			{
+				FinalizeOperation();
+			}
+			else
+			{
+				bool canDelete = await Shell.Current.DisplayAlert("Excluir Lembrete?", "Após excluir não será possível recuperar este lembrete, deseja realmente excluir?", "Sim", "Não");
+
+				if (canDelete)
+				{
+					var operationStatus = BdService.DeleteReminder(NewReminder);
+
+					if (operationStatus.Result != 1)
+					{
+						await Shell.Current.DisplayAlert("Ops!", "Parece que o lembrete não pôde ser excluído, tente repetir a operação ou reiniciar o aplicativo", "Entendi");
+					}
+
+					await NotificationService.DeleteReminderNotification(NewReminder.IdReminder);
+				}
+
+				FinalizeOperation();
 			}
 		}
 

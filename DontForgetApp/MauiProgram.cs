@@ -1,4 +1,5 @@
-﻿using DontForgetApp.Service;
+﻿using CommunityToolkit.Maui;
+using DontForgetApp.Service;
 using DontForgetApp.View;
 using DontForgetApp.ViewModel;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ namespace DontForgetApp
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
@@ -29,7 +31,9 @@ namespace DontForgetApp
             builder.Services.AddTransient<NewReminderView>();
             builder.Services.AddTransient<NewReminderViewModel>();
 
-            builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
+			builder.Services.AddTransientPopup<DetailPopupView, DetailPopupViewModel>();
+
+			builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
             builder.Services.AddSingleton<INotifyService, NotifyService>();
             return builder.Build();
         }

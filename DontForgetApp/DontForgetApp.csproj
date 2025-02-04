@@ -60,10 +60,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
 		<PackageReference Include="Plugin.LocalNotification" Version="11.1.4" />
+		<PackageReference Include="Plugin.Maui.Calendar" Version="1.2.6" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
 		<PackageReference Include="SQLitePCLRaw.core" Version="2.1.10" />
@@ -72,6 +74,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="View\DetailPopupView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\HomeView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
