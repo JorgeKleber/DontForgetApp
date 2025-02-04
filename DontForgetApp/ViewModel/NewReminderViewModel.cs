@@ -76,6 +76,7 @@ namespace DontForgetApp.ViewModel
 				ReminderDateTime = NewReminder.RemindDateTime;
 				ReminderTime = NewReminder.RemindDateTime.TimeOfDay;
 				isReminderUpdate = true;
+				GetAttachedFiles(NewReminder.IdReminder);
 			}
 		}
 
@@ -155,6 +156,13 @@ namespace DontForgetApp.ViewModel
 			var listFiles = await ConvertFileResultToAttachFile(_files);
 
 			SelectedFiles = listFiles.ToArray();
+		}
+
+		private async void GetAttachedFiles(int reminderId)
+		{
+			var files = await BdService.GetAttachFiles(reminderId);
+
+			SelectedFiles = files.ToArray();
 		}
 
 		public async Task<byte[]> ConvertFileToBytes(string filePath)

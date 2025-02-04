@@ -16,5 +16,6 @@ namespace DontForgetApp.Service
 		Task<int>DeleteReminder(Reminder reminder);
 		Task<int>UpdateReminder(Reminder reminder, AttachFile[] files = null);
 		Task<List<FileResult>> PickerSomeFiles();
+		Task<List<AttachFile>> GetAttachFiles(int reminderId);
 	}
 }

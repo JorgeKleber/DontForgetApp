@@ -48,14 +48,14 @@ namespace DontForgetApp.Service
 			}
 		}
 
-		public Task<int> AddReminder(Reminder reminder, AttachFile[] files = null)
+		public async Task<int> AddReminder(Reminder reminder, AttachFile[] files = null)
 		{
 			try
 			{
-				var result = _dbConnection.InsertAsync(reminder);
+				var result = await _dbConnection.InsertAsync(reminder);
 
 				if (files != null)
-					AddAttach(files);
+					await AddAttach(reminder.IdReminder,files);
 
 				return result;
 				
@@ -63,23 +63,28 @@ namespace DontForgetApp.Service
 			catch (Exception exception)
 			{
 				Debug.WriteLine("Ocorreu um erro na função AddReminder: " + exception.Message);
-				return Task.FromResult(-1);
+				return await Task.FromResult(-1);
 			}
 		}
 
-		private Task AddAttach(AttachFile[] files)
+		private async Task<int> AddAttach(int reminderId, AttachFile[] files)
 		{
 			try
 			{
-				var result = _dbConnection.InsertAllAsync(files);
+				foreach (var file in files)
+				{
+					file.IdReminder = reminderId;
+				}
 
-					return result;
+				var result = await _dbConnection.InsertAllAsync(files);
+
+					return await Task.FromResult(result);
 
 			}
 			catch (Exception exception)
 			{
 				Debug.WriteLine("Ocorreu um erro na função AddAttach: " + exception.Message);
-				return Task.FromResult(-1);
+				return await Task.FromResult(-1);
 
 			}
 		}
@@ -165,6 +170,19 @@ namespace DontForgetApp.Service
 			{
 				Debug.WriteLine("Ocorreu um erro na função GetReminders: " + exception.Message);
 				return Task.FromResult(new List<Reminder>());
+			}
+		}
+
+		public async Task<List<AttachFile>> GetAttachFiles(int reminderId)
+		{
+			try
+			{
+				return await _dbConnection.Table<AttachFile>().Where(reminder => reminder.IdReminder == reminderId).ToListAsync();
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine("Ocorreu um erro na função GetAttachFiles: " + exception.Message);
+				return await Task.FromResult(new List<AttachFile>());
 			}
 		}
 	}
