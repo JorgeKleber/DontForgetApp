@@ -3,6 +3,8 @@ using DontForgetApp.Service;
 using DontForgetApp.View;
 using DontForgetApp.ViewModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Platform;
+using Microsoft.Maui.Handlers;
 using Plugin.LocalNotification;
 
 namespace DontForgetApp
@@ -22,8 +24,24 @@ namespace DontForgetApp
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+#if ANDROID
+			EntryHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+			{
+				// remove o background padrão (underline) do Entry no Android
+				handler.PlatformView.SetBackground(null);
+			});
+            DatePickerHandler.Mapper.AppendToMapping("NoUnderLine", (hander, view) => 
+            {
+                hander.PlatformView.SetBackground(null);
+            });
+			TimePickerHandler.Mapper.AppendToMapping("NoUnderLine", (hander, view) =>
+			{
+				hander.PlatformView.SetBackground(null);
+			});
+#endif
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+			builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<HomeView>();
             builder.Services.AddSingleton<HomeViewModel>();

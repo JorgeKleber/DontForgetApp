@@ -15,65 +15,83 @@
         </Grid.RowDefinitions>
 
 
-        <plugin:Calendar VerticalOptions="Fill" Grid.Row="0"
+        <Border StrokeShape="RoundRectangle 12"
+            BackgroundColor="White"
+            Margin="10"
+            Padding="10,0,10,0">
+
+            <Border.Shadow>
+                <Shadow
+            Brush="Black"
+            Radius="10"
+            Opacity="0.3"
+            Offset="5,5" />
+
+            </Border.Shadow>
+            <plugin:Calendar VerticalOptions="Fill" Grid.Row="0"
                          HorizontalOptions="Fill"
                          FooterArrowVisible="False"
                          FooterSectionVisible="true"
                          SelectedDate="{Binding SelectedDate}"
                          Culture="{Binding CultureApp}"
-                         TodayOutlineColor="BlueViolet"
-                         Events="{Binding EventsDates}" 
+                         TodayOutlineColor="{StaticResource Primary}"
+                         SelectedDayBackgroundColor="{StaticResource Primary}"
+                         EventIndicatorColor="{StaticResource PrimaryDark}"
+                         EventIndicatorSelectedColor="{StaticResource SecondaryDarkText}"
+                         Events="{Binding EventsDates}"
                          EventsScrollViewVisible="True">
 
-            <plugin:Calendar.HeaderSectionTemplate>
-                <controls:CalendarHeader/>
-            </plugin:Calendar.HeaderSectionTemplate>
+                <plugin:Calendar.HeaderSectionTemplate>
+                    <controls:CalendarHeader/>
+                </plugin:Calendar.HeaderSectionTemplate>
 
-            <plugin:Calendar.FooterSectionTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="70"/>
-                        </Grid.ColumnDefinitions>
+                <plugin:Calendar.FooterSectionTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
 
-                        <SearchBar x:Name="searchBar" 
+                            <SearchBar x:Name="searchBar" 
                                    Placeholder="Informe o Título, Descrição do Lembrete"
                                    Grid.Column="0"
+                                       BackgroundColor="Transparent"
                                    SearchCommand="{Binding BindingContext.SearchTextChange}"
                                    SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
-                        
-                        <ImageButton Source="filter_icon" Aspect="Center"
+
+                            <ImageButton Source="filter_icon" Aspect="Center"
                                      Grid.Column="1" 
                                      Command="{Binding BindingContext.FilterSearch}"/>
-                    </Grid>
-                </DataTemplate>
-            </plugin:Calendar.FooterSectionTemplate>
+                        </Grid>
+                    </DataTemplate>
+                </plugin:Calendar.FooterSectionTemplate>
 
-            <plugin:Calendar.EventTemplate>
-                <DataTemplate>
-                    <Grid HeightRequest="70">
+                <plugin:Calendar.EventTemplate>
+                    <DataTemplate>
+                        <Grid HeightRequest="70">
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Image Source="reminder_icon" Aspect="Center" Margin="10,0,0,0" Grid.ColumnSpan="0"/>
-                        <StackLayout Margin="10,0,0,0" VerticalOptions="Center" Grid.Column="1">
-                            <Label Text="{Binding Title}" VerticalOptions="Center"/>
-                            <Label Text="{Binding RemindDateTime, StringFormat='{0:dd/MM/yyyy}'}" VerticalOptions="Center"/>
-                        </StackLayout>
+                            <Image Source="reminder_icon" Aspect="Center" Margin="10,0,0,0" Grid.ColumnSpan="0"/>
+                            <StackLayout Margin="10,0,0,0" VerticalOptions="Center" Grid.Column="1">
+                                <Label Text="{Binding Title}" TextColor="Black" VerticalOptions="Center"/>
+                                <Label Text="{Binding RemindDateTime, StringFormat='{0:dd/MM/yyyy}'}" TextColor="Black" VerticalOptions="Center"/>
+                            </StackLayout>
 
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.ShowReminderDetails, Source={x:Reference homeView}}" CommandParameter="{Binding .}"/>
-                        </Grid.GestureRecognizers>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.ShowReminderDetails, Source={x:Reference homeView}}" CommandParameter="{Binding .}"/>
+                            </Grid.GestureRecognizers>
 
-                    </Grid>
-                </DataTemplate>
-            </plugin:Calendar.EventTemplate>
+                        </Grid>
+                    </DataTemplate>
+                </plugin:Calendar.EventTemplate>
 
-        </plugin:Calendar>
+            </plugin:Calendar>
+        </Border>
 
         <Button Text="Novo Lembrete"
                 Command="{Binding AddNewReminder}"
