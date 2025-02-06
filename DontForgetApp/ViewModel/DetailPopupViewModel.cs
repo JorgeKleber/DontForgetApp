@@ -20,6 +20,8 @@ namespace DontForgetApp.ViewModel
 
 		public ICommand DeleteReminder { get; set; }
 		public ICommand EditReminder { get; set; }
+		public ICommand ClosePopup { get; set; }
+
 
 
 		public DetailPopupViewModel(IPopupService popupService)
@@ -28,6 +30,12 @@ namespace DontForgetApp.ViewModel
 
 			EditReminder = new Command(EditReminderEvent);
 			DeleteReminder = new Command(DeleteReminderEvent);
+			ClosePopup = new Command(ClosePopupEvent);
+		}
+
+		private void ClosePopupEvent(object obj)
+		{
+			popupService.ClosePopup();
 		}
 
 		private async void DeleteReminderEvent(object obj)

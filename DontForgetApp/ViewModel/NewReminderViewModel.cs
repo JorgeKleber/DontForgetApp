@@ -1,5 +1,4 @@
-﻿using Android.Speech.Tts;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DontForgetApp.Model;
 using DontForgetApp.Service;
 using Plugin.LocalNotification;
